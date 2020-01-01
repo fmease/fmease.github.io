@@ -7,6 +7,7 @@ html, body {
 
 body {
     background: linear-gradient(155deg, #fcfcfc 75%, rgb(15, 150, 120) 25%);
+    background-position: bottom;
     color: #2c2c2c;
 }
 
@@ -16,7 +17,7 @@ body {
     padding-top: 20vh;
 }
 
-.container > * {
+.tile {
     margin: 0 10px;
 }
 
@@ -27,35 +28,37 @@ img {
 
 article {
     font-family: 'Liberation Mono', monospace;
-    line-height: 1.4;
     max-width: 700px;
 }
 
-h1 {
+article h1 {
     font-size: 60px;
     margin: 0;
 }
 
-p {
+article .item {
     font-size: 20px;
     margin: 1em 0;
+    line-height: 1.4;
 }
 
-ul {
-    margin: 0;
+article .item span {
+    background: #fcfcfc;
+}
+
+article ul {
     list-style: none;
     padding-left: 0;
-    font-size: 20px;
 }
 
-a, a:visited {
+article a, a:visited {
     color: inherit;
 }
 
 @media (max-width: 950px) {
     .container {
-        flex-direction: column-reverse;
-        padding-top: 50px;
+        flex-direction: column;
+        padding-top: 0;
         align-items: center;
     }
 }
