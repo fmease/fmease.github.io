@@ -8,6 +8,7 @@ html, body {
 body {
     background: linear-gradient(155deg, #fcfcfc 75%, rgb(15, 150, 120) 25%);
     background-position: bottom;
+    background-size: cover;
     color: #2c2c2c;
 }
 
