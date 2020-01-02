@@ -7,6 +7,7 @@ html, body {
 
 body {
     background: linear-gradient(155deg, #fcfcfc 110vh, rgb(15, 150, 120) 110vh);
+    background-attachment: fixed;
     color: #2c2c2c;
 }
 
@@ -17,7 +18,7 @@ body {
 }
 
 .tile {
-    margin: 0 10px;
+    margin: 10px;
 }
 
 img {
@@ -63,6 +64,11 @@ article a, a:visited {
 }
 
 @media (max-width: 750px) {
+    img {
+        width: 100px;
+        height: 100px;
+    }
+
     article {
         width: 80%;
     }
