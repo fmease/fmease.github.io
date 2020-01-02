@@ -2,11 +2,11 @@ html, body {
     margin: 0;
     padding: 0;
     width: 100%;
-    height: 100%;
+    height: 100vh;
 }
 
 body {
-    background: linear-gradient(155deg, #fcfcfc 110vh, rgb(15, 150, 120) 0);
+    background: linear-gradient(155deg, #fcfcfc 110vh, rgb(15, 150, 120) 110vh);
     color: #2c2c2c;
 }
 
