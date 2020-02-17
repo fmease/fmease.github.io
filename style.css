@@ -52,7 +52,7 @@ article ul {
     padding-left: 0;
 }
 
-article a, a:visited {
+article a, article a:visited {
     color: inherit;
 }
 
