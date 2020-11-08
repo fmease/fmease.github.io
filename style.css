@@ -6,7 +6,7 @@ html, body {
 }
 
 body {
-    background: linear-gradient(155deg, #fcfcfc 110vh, rgb(15, 150, 120) 110vh);
+    background-image: linear-gradient(155deg, #fcfcfc 110vh, rgb(15, 150, 120) 110vh);
     background-attachment: fixed;
     color: #2c2c2c;
 }
@@ -28,7 +28,7 @@ img {
 }
 
 article {
-    font-family: 'Liberation Mono', monospace;
+    font-family: 'Liberation Mono', Consolas, Mono, 'DejaVu Sans Mono', monospace;
     max-width: 700px;
 }
 
@@ -65,6 +65,10 @@ article a, article a:visited {
 }
 
 @media (max-width: 750px) {
+    body {
+        background-image: linear-gradient(155deg, #fcfcfc 70vh, rgb(15, 150, 120) 70vh);
+    }
+    
     img {
         width: 100px;
         height: 100px;
