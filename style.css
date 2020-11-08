@@ -1,3 +1,9 @@
+:root {
+    --dark-gray: #2c2c2c;
+    --white: #fcfcfc;
+    --fir-green: rgb(15, 150, 120);
+}
+
 html, body {
     margin: 0;
     padding: 0;
@@ -6,9 +12,10 @@ html, body {
 }
 
 body {
-    background-image: linear-gradient(155deg, #fcfcfc 110vh, rgb(15, 150, 120) 110vh);
+    --verge: 110vh;
+    background-image: linear-gradient(155deg, var(--white) var(--verge), var(--fir-green) var(--verge));
     background-attachment: fixed;
-    color: #2c2c2c;
+    color: var(--dark-gray);
 }
 
 .container {
@@ -22,8 +29,9 @@ body {
 }
 
 img {
-    width: 200px;
-    height: 200px;
+    --size: 200px;
+    width: var(--size);
+    height: var(--size);
     image-rendering: pixelated;
 }
 
@@ -44,7 +52,7 @@ article .item {
 }
 
 article .item span {
-    background: #fcfcfc;
+    background: var(--white);
 }
 
 article ul {
@@ -66,12 +74,11 @@ article a, article a:visited {
 
 @media (max-width: 750px) {
     body {
-        background-image: linear-gradient(155deg, #fcfcfc 70vh, rgb(15, 150, 120) 70vh);
+        --verge: 70vh;
     }
     
     img {
-        width: 100px;
-        height: 100px;
+        --size: 100px;
     }
 
     article {
