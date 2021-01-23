@@ -4,6 +4,11 @@
     --fir-green: rgb(15, 150, 120);
 }
 
+::selection {
+    background: var(--fir-green);
+    color: var(--white);
+}
+
 html, body {
     margin: 0;
     padding: 0;
@@ -21,6 +26,7 @@ body {
 .container {
     display: flex;
     justify-content: center;
+    align-items: center;
     padding-top: 20vh;
 }
 
@@ -33,10 +39,11 @@ img {
     width: var(--size);
     height: var(--size);
     image-rendering: pixelated;
+    user-select: none;
 }
 
 article {
-    font-family: 'Liberation Mono', Consolas, Mono, 'DejaVu Sans Mono', monospace;
+    font-family: Cantarell, 'Segoe UI', Roboto, Ubuntu, 'Noto Sans', sans-serif;
     max-width: 700px;
 }
 
@@ -48,7 +55,9 @@ article h1 {
 article .item {
     font-size: 20px;
     margin: 1em 0;
-    line-height: 1.4;
+    letter-spacing: 0.02em;
+    word-spacing: 0.4em;
+    line-height: 1.7;
 }
 
 article .item span {
