@@ -45,6 +45,7 @@ img {
 article {
     font-family: Cantarell, 'Segoe UI', Roboto, Ubuntu, 'Noto Sans', sans-serif;
     max-width: 700px;
+    text-align: justify;
 }
 
 article h1 {
@@ -55,8 +56,6 @@ article h1 {
 article .item {
     font-size: 20px;
     margin: 1em 0;
-    letter-spacing: 0.02em;
-    word-spacing: 0.4em;
     line-height: 1.7;
 }
 
