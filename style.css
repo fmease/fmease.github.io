@@ -60,10 +60,6 @@ article .item {
     line-height: 1.9;
 }
 
-article .item span {
-    background: var(--white);
-}
-
 article ul {
     list-style: none;
     padding-left: 0;
@@ -96,5 +92,9 @@ article a, article a:visited {
 
     article h1 {
         font-size: 50px;
+    }
+
+    article .item {
+        font-size: 15px;
     }
 }
