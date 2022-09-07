@@ -1,3 +1,9 @@
+*,
+*::pre,
+*::after {
+    box-sizing: border-box;
+}
+
 :root {
     --dark-gray: #2c2c2c;
     --white: #fcfcfc;
@@ -9,7 +15,8 @@
     color: var(--white);
 }
 
-html, body {
+html,
+body {
     margin: 0;
     padding: 0;
     width: 100%;
@@ -17,7 +24,7 @@ html, body {
 }
 
 body {
-    --verge: 110vh;
+    --verge: 100vh;
     background-image: linear-gradient(155deg, var(--white) var(--verge), var(--fir-green) var(--verge));
     background-attachment: fixed;
     color: var(--dark-gray);
@@ -27,26 +34,41 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding-top: 20vh;
+    margin-top: 20vh;
 }
 
 .tile {
-    margin: 10px;
+    margin: 1em;
 }
 
 img {
-    --size: 200px;
     width: var(--size);
     height: var(--size);
-    image-rendering: pixelated;
+    margin: 0.5em;
     user-select: none;
+}
+
+.images {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+img {
+    --size: 180px;
+    border-radius: 100%;
+}
+
+#logo {
+    image-rendering: pixelated;
 }
 
 article {
     font-family: Cantarell, 'Segoe UI', Roboto, Ubuntu, 'Noto Sans', sans-serif;
     max-width: 700px;
     text-align: justify;
-    font-weight: 325;
+    font-weight: 300;
 }
 
 article h1 {
@@ -65,29 +87,46 @@ article ul {
     padding-left: 0;
 }
 
-article a, article a:visited {
+article a,
+article a:visited {
     color: inherit;
 }
 
-@media (max-width: 950px) {
-    .container {
-        flex-direction: column;
-        padding-top: 0;
-        align-items: center;
+@media (max-width: 1000px) {
+    body {
+        --verge: 70vh;
     }
+
+    .container {
+        flex-direction: column-reverse;
+        padding-top: 0;
+        align-items: stretch;
+        width: 80%;
+        margin: 2em auto;
+    }
+
+    .tile {
+        margin: 0.5em;
+    }
+
+    .images {
+        flex-direction: row;
+        justify-content: flex-end;
+    }
+
+    article {
+        max-width: none;
+    }
+
 }
 
 @media (max-width: 750px) {
     body {
-        --verge: 70vh;
-    }
-    
-    img {
-        --size: 100px;
+        --verge: 50vh;
     }
 
-    article {
-        width: 80%;
+    img {
+        --size: 100px;
     }
 
     article h1 {
