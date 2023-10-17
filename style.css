@@ -72,7 +72,7 @@ article {
 }
 
 article h1 {
-    font-size: 60px;
+    font-size: 50px;
     margin: 0;
 }
 
@@ -90,6 +90,10 @@ article ul {
 article a,
 article a:visited {
     color: inherit;
+}
+
+.strong {
+    font-weight: bold;
 }
 
 @media (max-width: 1000px) {
@@ -124,7 +128,7 @@ article a:visited {
     }
 
     article h1 {
-        font-size: 50px;
+        font-size: 30px;
     }
 
     article .item {
