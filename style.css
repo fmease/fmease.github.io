@@ -19,8 +19,8 @@ html,
 body {
     margin: 0;
     padding: 0;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
 }
 
 body {
@@ -29,9 +29,11 @@ body {
 }
 
 .container {
-    --padding: 12em;
+    --padding: 7em;
     --verge: 70%;
-    padding: var(--padding) 0;
+    padding: var(--padding) 0 0 0;
+    background: var(--off-white);
+    height: calc(100% - var(--padding));
     background: linear-gradient(170deg, var(--off-white) var(--verge), transparent var(--verge));
 }
 
@@ -91,10 +93,6 @@ article a:visited {
 }
 
 @media (max-width: 1000px) {
-    body {
-        --verge: 70vh;
-    }
-
     .container {
         --padding: 2em;
     }
@@ -123,10 +121,6 @@ article a:visited {
 @media (max-width: 750px) {
     img {
         --size: 100px;
-    }
-
-    .container {
-        --verge: 65%;
     }
 
     article h1 {
