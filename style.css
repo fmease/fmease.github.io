@@ -119,6 +119,10 @@ article a:visited {
 }
 
 @media (max-width: 750px) {
+    .container {
+        --padding: 1.5em;
+    }
+
     img {
         --size: 100px;
     }
@@ -129,5 +133,6 @@ article a:visited {
 
     article .item {
         font-size: 15px;
+        line-height: 1.7;
     }
 }
