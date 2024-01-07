@@ -1,5 +1,5 @@
 *,
-*::pre,
+*::before,
 *::after {
     box-sizing: border-box;
 }
@@ -90,6 +90,14 @@ article ul {
 article a,
 article a:visited {
     color: inherit;
+}
+
+.dotted > :not(:first-child)::before {
+    content: '· ';
+}
+
+.pronouns {
+    opacity: 0.6;
 }
 
 @media (max-width: 1000px) {
