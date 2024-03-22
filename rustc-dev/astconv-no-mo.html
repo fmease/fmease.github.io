@@ -1,0 +1,162 @@
+<!doctype html><html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>astconv-no-mo</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<style>
+code { color: inherit; }
+table > :not(caption) > * > * { padding: 0.3rem 0.5em !important; }
+tr > td:last-of-type { text-align: justify; }
+</style>
+</head>
+
+<body><div class="container"><h1><code>astconv-no-mo</code>: <code>AstConv</code> ⟼ <code>HirTyLowerer</code></h1>
+<p><ul>
+<li><a href="https://github.com/rust-lang/compiler-team/issues/723">compiler-team#723</a> <span class="badge bg-light text-dark">MCP</span></li>
+<li><a href="https://github.com/rust-lang/rust/pull/120926">rust#120926</a> <span class="badge bg-light text-dark">PR</span></li>
+<li><a href="https://github.com/rust-lang/rustc-dev-guide/pull/1916">rustc-dev-guide#1916</a> <span class="badge bg-light text-dark">PR</span></li>
+</ul></p>
+
+<h2>Guiding Principles</h2>
+
+<p><ul>
+<li>For functions, pick a name that
+    <ul>
+    <li>describes what it does <em>conceptually</em> (specification-wise) instead of <em>internally</em> (implementation-wise),</li>
+    <li>is concise without dropping relevant information and</li>
+    <li>looks esthetically pleasing if possible (e.g., by avoiding “acronym soup”).</li></ul></li>
+<li>Use the terminology <em><strong>lower</strong> X</em> for lowering functions instead of <em>X to Y</em>.
+    <ul>
+    <li>Functions should generally use <em>verbs</em> to describe their actions</li>
+    <li>Emphasizes / codifies the notion of <em>lowering</em></li>
+    <li>It's a pretty intuitive / obvious / discoverable naming scheme</li>
+    </ul></li>
+<li>Consistently use the terminology <em><strong>probe</strong></em> for “probing” functions.
+    <ul>
+    <li>Before: Unprefixed, <em>find</em>, <em>probe</em> &amp; <em>lookup</em></li>
+    <li>The verb was chosen due to the precedent <code>probe_adt</code> but</li>
+    <li>I'm not necessarily fixed on it. I'd be fine with <code>find</code>, too.</li>
+    </ul></li>
+<li>Consistently use <code>ty</code> over <code>type</code> and <code>assoc</code> over <code>associated</code> in item names.</li>
+</ul></p>
+
+<h2>Mapping</h2>
+<p style="width: 70%">Below you can find an <strong>exhaustive</strong> alphabetically sorted mapping from old to new name together with an optional comment justifying the respective renaming grouped by module (with one exception).</p>
+<table class="table table-hover">
+<thead class="table-dark" style="position: sticky; top: 0;">
+    <tr>
+        <th style="width: 25%;">Old Name</th>
+        <th style="width: 25%;">New Name</th>
+        <th style="width: 50%;">Comment</th>
+    </tr>
+</thead><tbody>
+<tr><td colspan="3" class="table-secondary text-center fw-bold"><code>rustc_hir_analysis</code></td></tr><tr><td><code>astconv</code></td><td><code>hir_ty_lowering</code></td><td></td></tr>
+<tr><td><code>hir_ty_to_ty</code></td><td><code>lower_ty</code></td><td></td></tr>
+<tr><td colspan="3" class="table-secondary text-center fw-bold"><code>hir_ty_lowering<code></td></tr><tr><td><code>AstConv</code></td><td><code>HirTyLowering</code></td><td></td></tr>
+<tr><td><code>PathSeg</code></td><td><code>GenericPathSegment</code></td><td>See the comment over at <code>probe_<wbr>generic_<wbr>path_<wbr>segments</code> for more context. This type doesn't represent <em>arbitrary</em> path segments but specifically only ones that are <em>semantically</em> allowed to have generic arguments.</td></tr>
+<tr><td colspan="3" class="table-secondary text-center fw-bold"><code>HirTyLowerer</code></td></tr><tr><td><code>allow_ty_infer</code></td><td><code>allow_infer</code></td><td>This isn't specifically about <em>type</em> variables but generally about any kind of inference variables.</td></tr>
+<tr><td><code>astconv</code></td><td><code>lowerer</code></td><td></td></tr>
+<tr><td><code>get_type_parameter_bounds</code></td><td><code>probe_ty_param_bounds</code></td><td></td></tr>
+<tr><td><code>projected_ty_from_poly_trait_ref</code></td><td><code>lower_assoc_ty</code></td><td>The new name describes what the method does <em>conceptually</em>, while the old one describes what it does <em>internally</em>.</td></tr>
+<tr><td colspan="3" class="table-secondary text-center fw-bold"><code>dyn HirTyLowerer&lt;'tcx&gt; + '_</code></td></tr><tr><td><code>add_bounds</code></td><td><code>lower_poly_bounds</code></td><td><p>The old naming scheme is nondescript, the new one is slightly more descriptive: <code>{compute,add}_<wbr>bounds</code> vs. <code>lower_<wbr>{mono,poly}_<wbr>bounds</code>.</p><p>This method lowers <em>polymorphic</em> bounds in the sense that they are <em>potentially</em> collectively quantified universally by an overarching / outer binder. If not, individual bounds may still be universally quantified by inner binders.</p><p>The terminology <em>poly</em> is preexisting, consider <code>PolyTraitRef</code> for example.</p></td></tr>
+<tr><td><code>add_implicitly_sized</code></td><td><code>add_sized_bound</code></td><td><p>If I can trust my non-native English skills, the old name is beyond <em>ungrammatical</em> even if we include <code>rustc</code> jargon since adverbs cannot modify nouns.</p><p>More noteworthily, I strongly lean towards dropping the word <em>implicit</em> here since it violates the layers of abstraction. Indeed, some entities have implicit <code>Sized</code> bounds. However, we are at the lowering / elaboration layer, there's no need to state this information.</p><p>Rephrased, the hypothetical alternative name <code>add_<wbr>implicit_<wbr>sized_<wbr>bound</code> wouldn't make sense semantically since one cannot <em>add</em> something that is implicit, <em>add</em> and <em>implicit</em> are contradictory. And if we were to make a case for <em>implicitly add</em>, that wouldn't make much sense either: The very action of adding is explicit — at least at this semantic layer.</td></tr>
+<tr><td><code>add_predicates_for_ast_type_binding</code></td><td><code>lower_assoc_item_binding</code></td><td><p>The new name describes what the method does <em>conceptually</em> (specification-wise), while the old one describes what it does <em>internally</em> (implementation-wise).</p><p>Regarding <em>item</em> over <em>type</em>: This method not only lowers assoc <em>type</em> bindings but also assoc const bindings as well as RTN (assoc functions). Note that <code>Type<wbr>Binding</code> should probably renamed, too, at some point (to <code>Assoc<wbr>Item<wbr>Binding</code>).</p></td></tr>
+<tr><td><code>associated_path_to_ty</code></td><td><code>lower_assoc_path</code></td><td></td></tr>
+<tr><td><code>ast_path_args_for_ty</code></td><td><code>lower_generic_args_of_path_segment</code></td><td></td></tr>
+<tr><td><code>ast_path_to_mono_trait_ref</code></td><td><code>lower_mono_trait_ref</code></td><td></td></tr>
+<tr><td><code>ast_path_to_ty</code></td><td><code>lower_path_segment</code></td><td></td></tr>
+<tr><td><code>ast_region_to_region</code></td><td><code>lower_lifetime</code></td><td>We lower HIR <em>lifetimes</em> (to middle <em>regions</em>), not “HIR <em>regions</em>” (those don't exist).</td></tr>
+<tr><td><code>ast_ty_to_ty</code></td><td><code>lower_ty</code></td><td></td></tr>
+<tr><td><code>ast_ty_to_ty_in_path</code></td><td><code>lower_ty_in_path</code></td><td></td></tr>
+<tr><td><code>ast_ty_to_ty_inner</code></td><td><code>lower_ty_common</code></td><td>Inspired by the terminology of the parser.</td></tr>
+<tr><td><code>compute_bounds</code></td><td><code>lower_mono_bounds</code></td><td><p>The old naming scheme is nondescript, the new one is slightly more descriptive: <code>{compute,add}_<wbr>bounds</code> vs. <code>lower_<wbr>{mono,poly}_<wbr>bounds</code>.</p><p>This method lowers <em>monomorphic</em> bounds in the sense that they aren't collectively quantified universally by an overarching / outer binder. However, individual bounds may still be universally quantified by inner binders.</p><p>Therefore the term <em>mono</em> could be regarded as confusing by some. Note however that this is consistent with the preexisting <code>ast_<wbr>path_<wbr>to_<wbr>mono_<wbr>trait_<wbr>ref</code> (renamed to <code>lower_<wbr>mono_<wbr>trait<wbr>_ref</code>).</p></td></tr>
+<tr><td><code>conv_object_ty_poly_trait_ref</code></td><td><code>lower_trait_object_ty</code></td><td>More succinct.</td></tr>
+<tr><td><code>create_args_for_associated_item</code></td><td><code>lower_generic_args_of_assoc_item</code></td><td></td></tr>
+<tr><td><code>create_args_for_ast_path</code></td><td><code>lower_generic_args_of_path</code></td><td></td></tr>
+<tr><td><code>def_ids_for_value_path_segments</code></td><td><code>probe_generic_path_segments</code></td><td><p>The old name is super nondescript. I had no idea what its job was until I read the comments and the implementation and looked at the usage sites. While the contained lengthy comment is somewhat true, namely that there is some work involved in <em>recovering</em> <code>DefId</code>s from HIR path segments and that this method implements this step, the name and the comment are misleading:</p><p>More significantly, this methods searches for path segments that are <em>semantically</em> allowed to have generic arguments. For example, it extracts the necessary information to reject <code>Option::&lt;()&gt;::<wbr>None::&lt;()&gt;</code> and to accept <code>Option::<wbr>None::&lt;()&gt;</code>.</p></td></tr>
+<tr><td><code>find_bound_for_assoc_item</code></td><td><code>probe_single_ty_param_bound_for_assoc_ty</code></td><td><p>Only cares about assoc <em>types</em>, not arbitrary assoc items.</p><p>Name disambiguated to differentiate it from <code>probe_<wbr>single_<wbr>bound_<wbr>for_<wbr>assoc_<wbr>item</code>. Only has a single usage site, therefore length doesn't matter. It's more descriptive, too.</p></td></tr>
+<tr><td><code>hir_id_to_bound_const</code></td><td><code>lower_const_param</code></td><td>The old name is nondescript and inaccurate. Not only we do we lower to <code>ty::<wbr>ConstKind::<wbr>Bound</code> but also to <code>ty::<wbr>ConstKind::<wbr>Param</code> depending on the boundness (early vs. late).</td></tr>
+<tr><td><code>hir_id_to_bound_ty</code></td><td><code>lower_ty_param</code></td><td>The old name is nondescript and inaccurate. Not only do we lower to <code>ty::<wbr>Bound</code> but also to <code>ty::<wbr>Param</code> depending on the boundness (early vs. late).</td></tr>
+<tr><td><code>impl_trait_ty_to_ty</code></td><td><code>lower_opaque_ty</code></td><td>The HIR type kind is called <code>OpaqueDef</code>, so we should keep this nomenclature. It's the right semantic level. “impl-Trait” is ambiguous (universial vs. existential) and more appropriate in contexts concerning the surface syntax.</td></tr>
+<tr><td><code>instantiate_mono_trait_ref</code></td><td><code>lower_impl_trait_ref</code></td><td>It's not <em>instantiating</em> anything, it's just <em>lowering</em>. Furthermore, the new name is more descriptive: This method lowers <em>impl</em> trait refs (preexisting terminology), i.e., the main trait ref inside impl headers to the left of keyword <code>for</code>.</td></tr>
+<tr><td><code>instantiate_poly_trait_ref</code></td><td><code>lower_poly_trait_ref</code></td><td>It's not <em>instantiating</em> anything, it's just <em>lowering</em>.</td></tr>
+<tr><td><code>lookup_assoc_ty</code></td><td><code>probe_assoc_ty</code></td><td></td></tr>
+<tr><td><code>lookup_assoc_ty_unchecked</code></td><td><code>probe_assoc_ty_unchecked</code></td><td></td></tr>
+<tr><td><code>lookup_inherent_assoc_ty</code></td><td><code>probe_inherent_assoc_ty</code></td><td></td></tr>
+<tr><td><code>one_bound_for_assoc_item</code></td><td><code>probe_single_bound_for_assoc_item</code></td><td></td></tr>
+<tr><td><code>prohibit_assoc_ty_binding</code></td><td><code>prohibit_assoc_item_binding</code></td><td>Regarding <em>item</em> over <em>type</em>: This method not only prohibits assoc <em>type</em> bindings but also assoc const bindings as well as RTN (assoc functions). Note that <code>Type<wbr>Binding</code> should probably renamed, too, at some point (to <code>Assoc<wbr>Item<wbr>Binding</code>).</td></tr>
+<tr><td><code>prohibit_generics</code></td><td><code>prohibit_generic_args</code></td><td><em>Generics</em> typically stands for generic <em>parameters</em> not <em>arguments</em> — in the compiler at least — and this function prohibits the latter.</td></tr>
+<tr><td><code>qpath_to_ty</code></td><td><code>lower_qpath</code></td><td></td></tr>
+<tr><td><code>res_to_ty</code></td><td><code>lower_path</code></td><td>Conceptually speaking, this method lowers paths. The fact that it utilizes the <code>Res</code> to achieve this is an implementation detail and shouldn't be mentioned as part of its name.</td></tr>
+<tr><td><code>trait_defines_associated_item_named</code></td><td><code>probe_trait_that_defines_assoc_item</code></td><td></td></tr>
+<tr><td><code>ty_from_delegation</code></td><td><code>lower_delegation_ty</code></td><td></td></tr>
+<tr><td><code>ty_of_arg</code></td><td><code>lower_arg_ty</code></td><td></td></tr>
+<tr><td><code>ty_of_fn</code></td><td><code>lower_fn_ty</code></td><td></td></tr>
+<tr><td colspan="3" class="table-secondary text-center fw-bold"><code>hir::GenericArgs&lt;'hir&gt;</code> ⟼ <code>ty::GenericArgs&lt;'tcx&gt;</code></td></tr><tr><td><code>create_args_for_parent_generic_args</code></td><td><code>lower_generic_args</code></td><td><p>Before the “substs → generic args” renaming, this used to be called <code>create_<wbr>substs_<wbr>for_<wbr>generic_<wbr>args</code> which was more accurate.</p><p>The current name <code>create_<wbr>args_<wbr>for_<wbr>parent_<wbr>generic_<wbr>args</code> is absolutely incorrect and confusing! We're not “creating generic args for parent generics args” but we're lowering generic args for the item whose <code>DefId</code> was provided (with the help of a <code>Generic<wbr>Args<wbr>Lowerer</code>) which also requires the pre-lowered <em>parent</em> generic args to be passed (that however is a secondary matter).</p><p>Respectfully, I think the author of the renaming PR saw the <code>parent_args</code> parameter and thought that the parent args were being lowered.</p></td></tr>
+<tr><td><code>CreateCtorInstantiationsContext</code></td><td><code>CtorGenericArgsCtxt</code></td><td>Local struct in <code>rustc_<wbr>hir_<wbr>typeck</code>. Consistent with <code>{Fn,Item}Ctxt</code>.</td></tr>
+<tr><td><code>CreateInstantiationsForGenericArgsCtxt</code></td><td><code>GenericArgsLowerer</code></td><td><p>Before the “substs → generic args” renaming, this used to be called <code>Create<wbr>Substs<wbr>For<wbr>Generic<wbr>Args<wbr>Ctxt</code> which was more accurate. Respectfully, the author of the renaming PR shouldn't have chosen the word “instantiations” here (I noted that on the PR after it was merged).</p><p>This trait models contexts that can lower <code>hir::GenericArgs</code> to <code>ty::GenericArgs</code>. The new name is <em>succinct</em> and mirrors the naming of trait <code>HirTyLowerer</code>.</p></td></tr>
+<tr><td><code>InstantiationsForAstPathCtxt</code></td><td><code>GenericArgsCtxt</code></td><td>Local struct in <code>rustc_<wbr>hir_<wbr>analysis</code>. Consistent with <code>{Fn,Item}Ctxt</code>.</td></tr>
+<tr><td><code>MethodInstantiationsCtxt</code></td><td><code>GenericArgsCtxt</code></td><td>Local struct in <code>rustc_<wbr>hir_<wbr>typeck</code>. Consistent with <code>{Fn,Item}Ctxt</code>.</td></tr>
+<tr><td colspan="3" class="table-secondary text-center fw-bold"><code>dyn HirTyLowerer&lt;'tcx&gt; + '_</code> in <code>hir_ty_lowering::errors</code></td></tr><tr><td><code>complain_about_inherent_assoc_type_not_found</code></td><td><code>complain_about_inherent_assoc_ty_not_found</code></td><td></td></tr>
+<tr><td><code>complain_about_ambiguous_inherent_assoc_type</code></td><td><code>complain_about_ambiguous_inherent_assoc_ty</code></td><td></td></tr>
+<tr><td><code>complain_about_missing_associated_types</code></td><td><code>complain_about_missing_assoc_tys</code></td><td></td></tr>
+<tr><td><code>note_ambiguous_inherent_assoc_type</code></td><td><code>note_ambiguous_inherent_assoc_ty</code></td><td></td></tr>
+<tr><td><code>report_ambiguous_associated_type</code></td><td><code>report_ambiguous_assoc_ty</code></td><td></td></tr>
+<tr><td colspan="3" class="table-secondary text-center fw-bold"><code>rustc_hir_analysis::collect::ItemCtxt</code></td></tr><tr><td><code>to_ty</code></td><td><code>lower_ty</code></td><td></td></tr>
+<tr><td><code>type_parameter_bounds_in_generics</code></td><td><code>probe_ty_param_bounds_in_generics</code></td><td></td></tr>
+<tr><td colspan="3" class="table-secondary text-center fw-bold"><code>rustc_hir_typeck::FnCtxt</code></td></tr><tr><td><code>array_length_to_const</code></td><td><code>lower_array_length</code></td><td></td></tr>
+<tr><td><code>const_arg_to_ty</code></td><td><code>lower_const_arg</code></td><td></td></tr>
+<tr><td><code>to_ty</code></td><td><code>lower_ty</code></td><td></td></tr>
+<tr><td><code>to_ty_saving_user_provided_ty</code></td><td><code>lower_ty_saving_user_provided_ty</code></td><td></td></tr>
+<tr><td colspan="3" class="table-secondary text-center fw-bold"><code>rustc_hir_analysis::collect</code></td></tr><tr><td><code>convert_⟨item⟩</code></td><td><code>lower_⟨item⟩</code></td><td></td></tr>
+<tr><td colspan="3" class="table-secondary text-center fw-bold"><code>rustc_trait_selection::traits</code></td></tr><tr><td><code>astconv_object_safety_violations</code></td><td><code>hir_ty_lowering_object_safety_violations</code></td><td></td></tr>
+<tr><td colspan="3" class="table-secondary text-center fw-bold"><code>resolve_bound_vars::is_late_bound_map</code></td></tr><tr><td><code>ConstrainedCollectorPostAstConv</code></td><td><code>ConstrainedCollectorPostHirTyLowering</code></td><td></td></tr>
+</tbody></table>
+<h2>Non-Exhaustive Reverse Mapping</h2>
+<p style="width: 70%">To properly demonstrate the beauty of the new naming scheme, below there's a non-exhaustive logically sorted mapping from new to old name of the main lowering methods only.</p>
+<table class="table table-hover w-50" style="margin: 0 auto;">
+<thead class="table-dark" style="position: sticky; top: 0;">
+    <tr>
+        <th>New Name</th>
+        <th>Old Name</th>
+    </tr>
+</thead><tbody>
+<tr><td colspan="2" class="table-secondary">&nbsp;</td></tr><tr><td><code>add_sized_bound</code></td><td><code>add_implicitly_sized</code></td></tr>
+<tr><td colspan="2" class="table-secondary">&nbsp;</td></tr><tr><td><code>lower_arg_ty</code></td><td><code>ty_of_arg</code></td></tr>
+<tr><td><code>lower_assoc_ty</code></td><td><code>projected_ty_from_poly_trait_ref</code></td></tr>
+<tr><td><code>lower_delegation_ty</code></td><td><code>ty_from_delegation</code></td></tr>
+<tr><td><code>lower_fn_ty</code></td><td><code>ty_of_fn</code></td></tr>
+<tr><td><code>lower_opaque_ty</code></td><td><code>impl_trait_ty_to_ty</code></td></tr>
+<tr><td><code>lower_trait_object_ty</code></td><td><code>conv_object_ty_poly_trait_ref</code></td></tr>
+<tr><td colspan="2" class="table-secondary">&nbsp;</td></tr><tr><td><code>lower_assoc_item_binding</code></td><td><code>add_predicates_for_ast_type_binding</code></td></tr>
+<tr><td colspan="2" class="table-secondary">&nbsp;</td></tr><tr><td><code>lower_assoc_path</code></td><td><code>associated_path_to_ty</code></td></tr>
+<tr><td><code>lower_path_segment</code></td><td><code>ast_path_to_ty</code></td></tr>
+<tr><td><code>lower_path</code></td><td><code>res_to_ty</code></td></tr>
+<tr><td><code>lower_qpath</code></td><td><code>qpath_to_ty</code></td></tr>
+<tr><td colspan="2" class="table-secondary">&nbsp;</td></tr><tr><td><code>lower_const_param</code></td><td><code>hir_id_to_bound_const</code></td></tr>
+<tr><td><code>lower_ty_param</code></td><td><code>hir_id_to_bound_ty</code></td></tr>
+<tr><td colspan="2" class="table-secondary">&nbsp;</td></tr><tr><td><code>lower_generic_args_of_assoc_item</code></td><td><code>create_args_for_associated_item</code></td></tr>
+<tr><td><code>lower_generic_args_of_path_segment</code></td><td><code>ast_path_args_for_ty</code></td></tr>
+<tr><td><code>lower_generic_args_of_path</code></td><td><code>create_args_for_ast_path</code></td></tr>
+<tr><td colspan="2" class="table-secondary">&nbsp;</td></tr><tr><td><code>lower_impl_trait_ref</code></td><td><code>instantiate_mono_trait_ref</code></td></tr>
+<tr><td><code>lower_mono_trait_ref</code></td><td><code>ast_path_to_mono_trait_ref</code></td></tr>
+<tr><td><code>lower_poly_trait_ref</code></td><td><code>instantiate_poly_trait_ref</code></td></tr>
+<tr><td colspan="2" class="table-secondary">&nbsp;</td></tr><tr><td><code>lower_lifetime</code></td><td><code>ast_region_to_region</code></td></tr>
+<tr><td colspan="2" class="table-secondary">&nbsp;</td></tr><tr><td><code>lower_mono_bounds</code></td><td><code>compute_bounds</code></td></tr>
+<tr><td><code>lower_poly_bounds</code></td><td><code>add_bounds</code></td></tr>
+<tr><td colspan="2" class="table-secondary">&nbsp;</td></tr><tr><td><code>lower_ty</code></td><td><code>ast_ty_to_ty</code></td></tr>
+<tr><td><code>lower_ty_common</code></td><td><code>ast_ty_to_ty_inner</code></td></tr>
+<tr><td><code>lower_ty_in_path</code></td><td><code>ast_ty_to_ty_in_path</code></td></tr>
+<tr><td colspan="2" class="table-secondary">&nbsp;</td></tr><tr><td><code>probe_assoc_ty_unchecked</code></td><td><code>lookup_assoc_ty_unchecked</code></td></tr>
+<tr><td><code>probe_assoc_ty</code></td><td><code>lookup_assoc_ty</code></td></tr>
+<tr><td><code>probe_generic_path_segments</code></td><td><code>def_ids_for_value_path_segments</code></td></tr>
+<tr><td><code>probe_inherent_assoc_ty</code></td><td><code>lookup_inherent_assoc_ty</code></td></tr>
+<tr><td><code>probe_single_bound_for_assoc_item</code></td><td><code>one_bound_for_assoc_item</code></td></tr>
+<tr><td><code>probe_single_ty_param_bound_for_assoc_ty</code></td><td><code>find_bound_for_assoc_item</code></td></tr>
+<tr><td><code>probe_trait_that_defines_assoc_item</code></td><td><code>trait_defines_associated_item_named</code></td></tr>
+<tr><td><code>probe_ty_param_bounds</code></td><td><code>get_type_parameter_bounds</code></td></tr>
+<tr><td colspan="2" class="table-secondary">&nbsp;</td></tr><tr><td><code>prohibit_assoc_item_binding</code></td><td><code>prohibit_assoc_ty_binding</code></td></tr>
+<tr><td><code>prohibit_generic_args</code></td><td><code>prohibit_generics</code></td></tr>
+</tbody></table>
+</div></body></html>
