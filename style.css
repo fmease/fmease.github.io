@@ -31,8 +31,7 @@ body {
 .container {
     --padding: 7em;
     --verge: 70%;
-    padding: var(--padding) 0 0 0;
-    background: var(--off-white);
+    padding-top: var(--padding);
     height: calc(100% - var(--padding));
     background: linear-gradient(170deg, var(--off-white) var(--verge), transparent var(--verge));
 }
@@ -70,7 +69,6 @@ article {
     font-weight: 300;
     text-align: justify;
     max-width: 700px;
-
 }
 
 article h1 {
@@ -82,15 +80,15 @@ article p {
     line-height: 1.8;
 }
 
-.unobtrustive {
-    opacity: 0.6;
-}
-
 .phon-transcr {
     padding: 0 1em;
     font-size: initial;
     font-weight: 300;
     opacity: 0.8;
+}
+
+.unobtrustive {
+    opacity: 0.6;
 }
 
 article ul {
@@ -128,7 +126,6 @@ article a:visited {
     article {
         max-width: none;
     }
-
 }
 
 @media (max-width: 750px) {
@@ -140,12 +137,15 @@ article a:visited {
         --size: 100px;
     }
 
+    article {
+        font-size: 15px;
+    }
+
     article h1 {
         font-size: 30px;
     }
 
-    article .item {
-        font-size: 15px;
+    article p {
         line-height: 1.7;
     }
 }
