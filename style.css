@@ -67,7 +67,6 @@ article {
     font-family: Cantarell, 'Segoe UI', Roboto, Ubuntu, 'Noto Sans', sans-serif;
     font-size: 20px;
     font-weight: 300;
-    text-align: justify;
     max-width: 700px;
 }
 
@@ -76,12 +75,19 @@ article h1 {
     margin: 0;
 }
 
-article p {
-    line-height: 1.8;
+.transcribed {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    column-gap: 1.5rem;
 }
 
-.phon-transcr {
-    padding: 0 1em;
+.transcribed>* {
+    white-space: nowrap;
+    overflow: scroll;
+}
+
+.transcription {
     font-size: initial;
     font-weight: 300;
     opacity: 0.8;
@@ -89,6 +95,11 @@ article p {
 
 .unobtrustive {
     opacity: 0.6;
+}
+
+article p {
+    text-align: justify;
+    line-height: 1.8;
 }
 
 article ul {
