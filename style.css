@@ -66,9 +66,11 @@ img {
 
 article {
     font-family: Cantarell, 'Segoe UI', Roboto, Ubuntu, 'Noto Sans', sans-serif;
-    max-width: 700px;
-    text-align: justify;
+    font-size: 20px;
     font-weight: 300;
+    text-align: justify;
+    max-width: 700px;
+
 }
 
 article h1 {
@@ -76,13 +78,24 @@ article h1 {
     margin: 0;
 }
 
-article .item {
-    font-size: 20px;
-    margin: 1em 0;
+article p {
     line-height: 1.9;
 }
 
+.unobtrustive {
+    opacity: 0.6;
+}
+
+.phon-transcr {
+    padding: 0 1em;
+    font-size: initial;
+    font-weight: 300;
+    opacity: 0.8;
+}
+
 article ul {
+    display: flex;
+    gap: 0.5em;
     list-style: none;
     padding-left: 0;
 }
@@ -90,14 +103,6 @@ article ul {
 article a,
 article a:visited {
     color: inherit;
-}
-
-.dotted > :not(:first-child)::before {
-    content: '· ';
-}
-
-.pronouns {
-    opacity: 0.6;
 }
 
 @media (max-width: 1000px) {
