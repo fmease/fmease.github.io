@@ -90,9 +90,9 @@ article h1 {
 .transcription {
     font-size: initial;
     font-weight: 300;
-    opacity: 0.8;
 }
 
+.transcription,
 .unobtrustive {
     opacity: 0.6;
 }
