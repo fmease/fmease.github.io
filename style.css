@@ -8,11 +8,21 @@
     --dark-gray: #2c2c2c;
     --off-white: #fcfcfc;
     --fir-green: rgb(15, 150, 120);
+
+    --foreground-color: var(--dark-gray);
+    --background-color: var(--off-white);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --foreground-color: var(--off-white);
+        --background-color: var(--dark-gray);
+    }
 }
 
 ::selection {
     background: var(--fir-green);
-    color: var(--off-white);
+    color: var(--background-color);
 }
 
 html,
@@ -24,7 +34,7 @@ body {
 }
 
 body {
-    color: var(--dark-gray);
+    color: var(--foreground-color);
     background: var(--fir-green);
 }
 
@@ -33,7 +43,7 @@ body {
     --verge: 70%;
     padding-top: var(--padding);
     height: calc(100% - var(--padding));
-    background: linear-gradient(170deg, var(--off-white) var(--verge), transparent var(--verge));
+    background: linear-gradient(170deg, var(--background-color) var(--verge), transparent var(--verge));
 }
 
 .content {
