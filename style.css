@@ -103,7 +103,7 @@ article h1 {
     opacity: 0.6;
 }
 
-article p {
+article > p, article > ul {
     text-align: justify;
     line-height: 1.8;
 }
