@@ -85,12 +85,8 @@ article h1 {
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
+    justify-content: space-between;
     column-gap: 1.5rem;
-}
-
-.transcribed>* {
-    white-space: nowrap;
-    overflow: scroll;
 }
 
 .transcription {
