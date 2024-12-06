@@ -89,14 +89,19 @@ article h1 {
     column-gap: 1.5rem;
 }
 
-.transcription {
-    font-size: initial;
-    font-weight: 300;
-}
-
 .transcription,
 .unobtrustive {
     opacity: 0.6;
+}
+
+.transcription {
+    font-size: initial;
+    font-weight: 300;
+    transition: opacity 0.1s ease-in-out;
+}
+
+.transcription:hover {
+    opacity: initial;
 }
 
 article > p, article > ul {
