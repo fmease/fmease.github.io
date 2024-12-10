@@ -36,10 +36,13 @@ body {
 body {
     color: var(--foreground-color);
     background: var(--fir-green);
+    font-family: Cantarell, 'Segoe UI', Roboto, Ubuntu, 'Noto Sans', sans-serif;
+    font-size: 20px;
+    font-weight: 300;
 }
 
 .container {
-    --padding: 7em;
+    --padding: 8rem;
     --verge: 70%;
     padding-top: var(--padding);
     height: calc(100% - var(--padding));
@@ -49,10 +52,7 @@ body {
 .content {
     display: flex;
     justify-content: center;
-}
-
-.tile {
-    margin: 1em;
+    gap: 2rem;
 }
 
 .images {
@@ -64,21 +64,18 @@ img {
     --size: 180px;
     width: var(--size);
     height: var(--size);
-    margin: 0.5em;
+    margin: 0.5rem;
     border-radius: 100%;
     user-select: none;
 }
 
-article {
-    font-family: Cantarell, 'Segoe UI', Roboto, Ubuntu, 'Noto Sans', sans-serif;
-    font-size: 20px;
-    font-weight: 300;
-    max-width: 700px;
-}
-
-article h1 {
+h1 {
     font-size: 50px;
     margin: 0;
+}
+
+article {
+    max-width: 700px;
 }
 
 .transcribed {
@@ -111,7 +108,7 @@ article > p, article > ul {
 
 article ul {
     display: flex;
-    gap: 0.5em;
+    gap: 0.5rem;
     list-style: none;
     padding-left: 0;
 }
@@ -123,17 +120,14 @@ article a:visited {
 
 @media (max-width: 1000px) {
     .container {
-        --padding: 2em;
+        --padding: 2rem;
     }
 
     .content {
         width: 80%;
         margin: 0 auto;
         flex-direction: column-reverse;
-    }
-
-    .tile {
-        margin: 0.5em;
+        gap: 1rem;
     }
 
     .images {
@@ -148,7 +142,7 @@ article a:visited {
 
 @media (max-width: 750px) {
     .container {
-        --padding: 1.5em;
+        --padding: 1.5rem;
     }
 
     img {
